@@ -5,12 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.zalinius.architecture.GameContainer;
 import com.zalinius.architecture.Graphical;
 import com.zalinius.architecture.Logical;
+import com.zalinius.architecture.input.Clickable;
 
-public class SVGDefender implements Graphical, Logical {
+public class SVGDefender extends GameContainer {
 	
 	private Graphical rect;
 	private double theta;
@@ -21,7 +24,20 @@ public class SVGDefender implements Graphical, Logical {
 		transform = new AffineTransform();
 		rect = new TransformedShape(new Rectangle2D.Double(50, 50, 100, 200), transform);
 		theta = 0;
-		react = new PolygonReactor();
+		react = new PolygonReactor(mouseLocator());
+		
+		addControls(null, mouseInputs());
+
+	}
+	
+	
+	
+	public List<Clickable> mouseInputs(){
+		List<Clickable> mouseInput = new ArrayList<>();
+		
+		mouseInput.add(react);
+		
+		return mouseInput;
 	}
 
 	public void update(double delta) {
@@ -38,8 +54,7 @@ public class SVGDefender implements Graphical, Logical {
 	
 	public static void main(String[] args) {
 		SVGDefender game = new SVGDefender();
-		GameContainer container = new GameContainer(game, game);
-		container.startGame();
+		game.startGame();
 	}
 
 }

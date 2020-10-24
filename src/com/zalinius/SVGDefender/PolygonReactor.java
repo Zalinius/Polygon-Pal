@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -11,30 +12,37 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zalinius.architecture.Graphical;
+import com.zalinius.architecture.Locatable;
 import com.zalinius.architecture.Logical;
+import com.zalinius.architecture.input.Clickable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
 
-public class PolygonReactor implements Logical, Graphical {
+public class PolygonReactor implements Logical, Graphical, Clickable {
 
 	private List<Vertex> vertices;
 	private Vertex center;
+	private boolean dragging;
+	private Locatable mouse;
 
-	public PolygonReactor() {
-		vertices = new ArrayList<Vertex>();
-		vertices.add(new Vertex(250, 450));
-		vertices.add(new Vertex(350, 450));
-		vertices.add(new Vertex(400, 550));
-		vertices.add(new Vertex(300, 600));
-		vertices.add(new Vertex(200, 550));
-
-		List<Point> positions = new ArrayList<Point>();
-		for (Iterator<Vertex> it = vertices.iterator(); it.hasNext();) {
-			Vertex vertex = it.next();
-			positions.add(vertex.position());
-		}
-		center = new Vertex(Point.center(positions), 10);
+	public PolygonReactor(Locatable mouse) {
+		this(mouse, PolygonFactory.simplePolygon(7));
 	}
+	public PolygonReactor(Locatable mouse, List<Point> points) {
+		vertices = new ArrayList<Vertex>();
+		for (Iterator<Point> it = points.iterator(); it.hasNext();) {
+			Point point = it.next();
+			vertices.add(new Vertex(point));
+		}
+		center = new Vertex(Point.center(points), 10);
+		
+		this.mouse = mouse;
+	}
+	
+	
+	
+
+
 
 
 	public void update(double delta) {
@@ -49,7 +57,7 @@ public class PolygonReactor implements Logical, Graphical {
 			Vertex vertex1 = vertices.get(i);
 			Vertex vertex2 = vertices.get(Math.floorMod(i + 1, vertices.size()));
 
-			Vector forceOn1 = elasticForce(vertex1.position(), vertex2.position(), 20, segmentWidth());
+			Vector forceOn1 = elasticForce(vertex1.position(), vertex2.position(), 10, segmentWidth());
 			Vector forceOn2 = forceOn1.scale(-1);
 
 			forces.set(i, forces.get(i).add(forceOn1));
@@ -70,6 +78,15 @@ public class PolygonReactor implements Logical, Graphical {
 			forces.set(i, forces.get(i).add(friction));
 		}
 
+		if(dragging) {
+			Vector mouseDraggingForce = new Vector(center.position(), mouse.center());
+			double maxDraggingForce = 500;
+			double magnitude = Math.min(mouseDraggingForce.length(), maxDraggingForce);
+			mouseDraggingForce = mouseDraggingForce.normalize().scale(magnitude);
+			mouseDraggingForce.scale(mouseDraggingForce.length());
+			centerForce = centerForce.add(mouseDraggingForce);
+			
+		}
 
 
 		//Apply all forces
@@ -140,8 +157,36 @@ public class PolygonReactor implements Logical, Graphical {
 		return sideLength / (2 * Math.cos(Math.toRadians(90) * ((sides - 2.0) / sides)));
 	}
 
-	public double segmentWidth() {
+	public static double segmentWidth() {
 		return 100;
+	}
+
+
+	public Shape clickArea() {
+		return buildPath();
+	}
+
+
+	public int mouseButtonCode() {
+		return MouseEvent.BUTTON1;
+	}
+
+
+	public void mouseClicked() {
+		//empty
+	}
+
+
+	public void mousePressed() {
+		dragging = true;
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void mouseReleased() {
+		dragging = false;
+		// TODO Auto-generated method stub		
 	}
 
 }
