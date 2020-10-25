@@ -12,6 +12,7 @@ import com.zalinius.architecture.GameContainer;
 import com.zalinius.architecture.Graphical;
 import com.zalinius.architecture.Logical;
 import com.zalinius.architecture.input.Clickable;
+import com.zalinius.physics.Vector;
 
 public class SVGDefender extends GameContainer {
 	
@@ -21,13 +22,13 @@ public class SVGDefender extends GameContainer {
 	private PolygonReactor react;
 	
 	public SVGDefender() {
+		super("SVG Defender", 1920, 1000, Color.BLACK);
 		transform = new AffineTransform();
 		rect = new TransformedShape(new Rectangle2D.Double(50, 50, 100, 200), transform);
 		theta = 0;
 		react = new PolygonReactor(mouseLocator());
 		
 		addControls(null, mouseInputs());
-
 	}
 	
 	
@@ -55,6 +56,13 @@ public class SVGDefender extends GameContainer {
 	public static void main(String[] args) {
 		SVGDefender game = new SVGDefender();
 		game.startGame();
+	}
+
+
+
+	@Override
+	public Vector resolution() {
+		return new Vector(1800, 1000);
 	}
 
 }
