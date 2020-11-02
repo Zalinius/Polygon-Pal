@@ -6,8 +6,7 @@ import java.util.List;
 import com.zalinius.physics.Point;
 
 public class PolygonFactory {
-	public static List<Point> simplePolygon(int sides) {
-		Point center = new Point(300, 300);
+	public static List<Point> simplePolygon(Point center, int sides) {
 		double radius = PolygonReactor.polygonRadius(sides, PolygonReactor.segmentWidth());
 		return regularPolygon(center, sides, radius);
 	}

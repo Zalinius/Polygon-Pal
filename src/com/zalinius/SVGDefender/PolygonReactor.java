@@ -4,48 +4,49 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import com.zalinius.architecture.Graphical;
 import com.zalinius.architecture.Locatable;
-import com.zalinius.architecture.Logical;
-import com.zalinius.architecture.input.Clickable;
+import com.zalinius.architecture.input.Inputtable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
 
-public class PolygonReactor implements Logical, Graphical, Clickable {
+public class PolygonReactor implements Graphical, Locatable {
 
 	private List<Vertex> vertices;
+	private List<Boolean> edges;
 	private Vertex center;
-	private boolean dragging;
-	private Locatable mouse;
 
-	public PolygonReactor(Locatable mouse) {
-		this(mouse, PolygonFactory.simplePolygon(7));
+	private static final int EDGE_STIFFNESS = 30;
+	private static final int BROKEN_EDGE_STIFFNESS = 20;
+	private static final int CENTER_EDGE_STIFFNESS = 80;
+
+	public PolygonReactor(Point center) {
+		this(PolygonFactory.simplePolygon(center, 5));
 	}
-	public PolygonReactor(Locatable mouse, List<Point> points) {
-		vertices = new ArrayList<Vertex>();
+
+	public PolygonReactor(List<Point> points) {
+		vertices = new ArrayList<>();
+		edges = new ArrayList<>();
 		for (Iterator<Point> it = points.iterator(); it.hasNext();) {
 			Point point = it.next();
 			vertices.add(new Vertex(point));
+			edges.add(Boolean.TRUE);
 		}
-		center = new Vertex(Point.center(points), 10);
-		
-		this.mouse = mouse;
+		center = new Vertex(Point.center(points), 5);
+
+		directionOfInput = new Vector();
 	}
-	
-	
-	
 
 
 
-
-	public void update(double delta) {
+	public void update(double delta, List<Projectile> collideables) {
 		//Calculate all forces
 		List<Vector> forces = new ArrayList<Vector>();
 		for (int i = 0; i < vertices.size(); i++) {
@@ -57,7 +58,15 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 			Vertex vertex1 = vertices.get(i);
 			Vertex vertex2 = vertices.get(Math.floorMod(i + 1, vertices.size()));
 
-			Vector forceOn1 = elasticForce(vertex1.position(), vertex2.position(), 10, segmentWidth());
+			boolean edge = edges.get(i);
+			int stiffness;
+			if(edge) {
+				stiffness = EDGE_STIFFNESS;
+			}
+			else {
+				stiffness = BROKEN_EDGE_STIFFNESS;
+			}
+			Vector forceOn1 = elasticForce(vertex1.center(), vertex2.center(), stiffness, segmentWidth());
 			Vector forceOn2 = forceOn1.scale(-1);
 
 			forces.set(i, forces.get(i).add(forceOn1));
@@ -66,7 +75,7 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 
 
 
-			Vector centerForceOn1 = elasticForce(vertex1.position(), center.position(), 5, polygonRadius(vertices.size(), segmentWidth()));
+			Vector centerForceOn1 = elasticForce(vertex1.center(), center.center(), CENTER_EDGE_STIFFNESS, polygonRadius(vertices.size(), segmentWidth()));
 			Vector forceOf1OnCenter = centerForceOn1.scale(-1);
 
 			forces.set(i, forces.get(i).add(centerForceOn1));
@@ -78,16 +87,71 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 			forces.set(i, forces.get(i).add(friction));
 		}
 
-		if(dragging) {
-			Vector mouseDraggingForce = new Vector(center.position(), mouse.center());
-			double maxDraggingForce = 500;
-			double magnitude = Math.min(mouseDraggingForce.length(), maxDraggingForce);
-			mouseDraggingForce = mouseDraggingForce.normalize().scale(magnitude);
-			mouseDraggingForce.scale(mouseDraggingForce.length());
-			centerForce = centerForce.add(mouseDraggingForce);
-			
+
+
+		//Check for edge collisions
+		for (Iterator<Projectile> it = collideables.iterator(); it.hasNext();) {
+			Projectile p = it.next();
+
+			for (int i = 0; i < edges.size(); i++) {
+				Vertex vertex1 = vertices.get(i);
+				Vertex vertex2 = vertices.get(Math.floorMod(i + 1, vertices.size()));
+				Boolean edge = edges.get(i);
+
+				if(edge && intersection(p.shape(), new Line2D.Double(vertex1.x(), vertex1.y(), vertex2.x(), vertex2.y())) && !p.wasHit()) {
+					p.hit();
+					it.remove();
+					edges.set(i, false);
+
+					Vector momentum = p.momentum();//TODO distribute between vertices based on proximity?
+					vertex1.impulse(momentum);
+					vertex2.impulse(momentum);
+				}
+			}
 		}
 
+		//Check for fill collision
+
+		Shape interior = buildPath(true);
+		for (Iterator<Projectile> it = collideables.iterator(); it.hasNext();) {
+			Projectile p = it.next();	
+
+			if(interior.contains(p.center().x, p.center().y)) {
+				//find closest vertex, and remove it
+				it.remove();
+				center.impulse(p.momentum());
+
+				Vertex closestVertex = null;
+				for (Iterator<Vertex> itVertex = vertices.iterator(); itVertex.hasNext();) {
+					Vertex vertex = itVertex.next();
+
+					if(closestVertex == null || Point.distance(p.center(), vertex.center()) < Point.distance(p.center(), closestVertex.center())) {
+						closestVertex = vertex;
+					}
+				}
+
+
+				int hitVertex = vertices.indexOf(closestVertex);
+				if(edges.get(hitVertex)) {
+					hitVertex = Math.floorMod(hitVertex - 1, vertices.size());
+				}
+				vertices.remove(hitVertex);
+				edges.remove(hitVertex);
+			}
+		}
+
+		//Check for input
+		if(!directionOfInput.isZeroVector()) {
+			double inputStrength = 2000;
+			Vector direction = directionOfInput.normalize();
+			Vector inputForce = direction.scale(inputStrength);
+			centerForce = centerForce.add(inputForce);
+		}
+
+		if(vertices.size() == 0) {
+			forces.clear();
+			centerForce = frictionForce(center.velocity().scale(10));
+		}
 
 		//Apply all forces
 		for (int i = 0; i < vertices.size(); ++i) {
@@ -97,10 +161,9 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 	}
 
 	public static Vector frictionForce(Vector velocity) {
-		double friction = .5;
+		double friction = .9;
 		return velocity.scale(-1 * friction);
 	}
-
 
 	/**
 	 * The force generated by a spring between two points
@@ -116,34 +179,102 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 		return direction.scale(magnitude);
 	}
 
-	public Path2D buildPath() {
+	public Path2D buildPath(boolean ignoreMissingEdges) {
 		Path2D path = new Path2D.Double();		
+		if(vertices.size() == 0) {
+			return path;
+		}
+
 		Iterator<Vertex> it = vertices.iterator();
+		Iterator<Boolean> itEdge = edges.iterator();
 		Vertex first = it.next();
 		path.moveTo(first.x(), first.y());
 		while (it.hasNext()) {
 			Vertex vertex = it.next();
-			path.lineTo(vertex.x(), vertex.y());			
+			Boolean edge = itEdge.next();
+			if(ignoreMissingEdges || edge) {
+				path.lineTo(vertex.x(), vertex.y());			
+			}
+			else {
+				path.moveTo(vertex.x(), vertex.y());
+			}
 		}
 
-		path.closePath();
+		if(edges.get(edges.size()-1)) {
+			path.lineTo(first.x(), first.y());
+		}
 
 		return path;
 	}
 
+
+	public static boolean intersection(Ellipse2D.Double circle, Line2D.Double line) {
+		Point center = new Point(circle.getCenterX(), circle.getCenterY());
+		double radius = circle.width/2d;
+
+		//transform to line at origin coordinates
+		Point pointPrime = center.subtract(line.x1, line.y1);
+		Vector linePrime = new Vector(line.x1, line.y1, line.x2, line.y2);
+
+		double projectionMagnitude = linePrime.projectionMagnitude(pointPrime);
+
+		Point closestPoint;
+
+		if(projectionMagnitude >= 0 && projectionMagnitude <= linePrime.length()) {
+			closestPoint = linePrime.normalize().scale(projectionMagnitude).add(line.x1, line.y1).toPoint();
+		}
+		else {
+			if(line.getP1().distance(center.x, center.y) < line.getP2().distance(center.x, center.y)) {
+				closestPoint = new Point(line.getX1(), line.getY1());
+			}
+			else {
+				closestPoint = new Point(line.getX2(), line.getY2());
+			}
+
+		}
+		return Point.distance(center, closestPoint) <= radius;
+	}
+
+	public boolean reactorDestroyed() {
+		return vertices.size() <= 2 || edges.size() <= 2;
+	}
+
 	public void render(Graphics2D g) {
+		Path2D path = buildPath(false);
+		Path2D area = buildPath(true);
 
-		Path2D path = buildPath();
-
-		g.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		g.setColor(Color.WHITE);
 		g.draw(path);
 		g.setColor(Color.RED);
-		g.fill(path);
+		g.fill(area);
 
 		g.setColor(Color.WHITE);
 
-		g.fill(centeredCircle(center.position(), 10));
+
+		drawEyesAndMouth(g, center.center());
+	}
+
+	public void drawEyesAndMouth(Graphics2D g, Point center) {
+		if(vertices.size() != 0) {
+
+			g.fill(centeredCircle(center.add(-20, -20), 10));
+			g.fill(centeredCircle(center.add(20, -20), 10));
+
+			g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 180, 180);
+		}
+		else {
+			Line2D.Double line1 = new Line2D.Double(center.add(-25, -25).point2D(), center.add(-15, -15).point2D());
+			Line2D.Double line2 = new Line2D.Double(center.add(-15, -25).point2D(), center.add(-25, -15).point2D());
+			Line2D.Double line3 = new Line2D.Double(center.add(25, -25).point2D(), center.add(15, -15).point2D());
+			Line2D.Double line4 = new Line2D.Double(center.add(15, -25).point2D(), center.add(25, -15).point2D());
+			g.draw(line1);
+			g.draw(line2);
+			g.draw(line3);
+			g.draw(line4);
+			g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 0, 180);
+		}
+
 	}
 
 	public static Shape centeredCircle(Point center, double radius) {
@@ -161,32 +292,56 @@ public class PolygonReactor implements Logical, Graphical, Clickable {
 		return 100;
 	}
 
-
-	public Shape clickArea() {
-		return buildPath();
+	public void heal() {
+		for (int i = 0; i < edges.size(); i++) {
+			edges.set(i, true);
+		}
 	}
 
 
-	public int mouseButtonCode() {
-		return MouseEvent.BUTTON1;
+
+
+
+	//INPUT//
+	public List<Inputtable> inputs(){
+		List <Inputtable> inputs = new ArrayList<>();
+
+		inputs.add(directionInput(KeyEvent.VK_W, new Vector( 0, -1)));
+		inputs.add(directionInput(KeyEvent.VK_A, new Vector(-1,  0)));
+		inputs.add(directionInput(KeyEvent.VK_S, new Vector( 0,  1)));
+		inputs.add(directionInput(KeyEvent.VK_D, new Vector( 1,  0)));
+
+		return inputs;
+	}
+	private Vector directionOfInput;
+	public Inputtable directionInput(int key, Vector direction) {
+		return new Inputtable() {
+
+			@Override
+			public void released() {
+				directionOfInput = directionOfInput.subtract(direction);
+			}
+
+			@Override
+			public void pressed() {
+				directionOfInput = directionOfInput.add(direction);		
+			}
+
+			@Override
+			public int keyCode() {
+				return key;
+			}
+		};
 	}
 
-
-	public void mouseClicked() {
-		//empty
+	@Override
+	public Point center() {
+		return center.center();
 	}
 
-
-	public void mousePressed() {
-		dragging = true;
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void mouseReleased() {
-		dragging = false;
-		// TODO Auto-generated method stub		
+	public void kill() {
+		vertices.clear();
+		edges.clear();		
 	}
 
 }
