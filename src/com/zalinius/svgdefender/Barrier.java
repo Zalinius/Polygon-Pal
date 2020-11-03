@@ -1,4 +1,4 @@
-package com.zalinius.SVGDefender;
+package com.zalinius.svgdefender;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -191,13 +191,10 @@ public class Barrier implements Graphical {
 		private Vertex vertex;
 		private Locatable partnerVertex;
 		private boolean dragging;
-		private Locatable mouse;
 
-		
 		public DraggableVertex(Vertex vertex, Locatable partnerVertex, Locatable mouse) {
 			this.vertex = vertex;
 			this.partnerVertex = partnerVertex;
-			this.mouse = mouse;
 			this.dragging = false;
 		}
 		

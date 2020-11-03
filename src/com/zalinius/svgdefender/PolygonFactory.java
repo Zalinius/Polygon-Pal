@@ -1,4 +1,4 @@
-package com.zalinius.SVGDefender;
+package com.zalinius.svgdefender;
 
 import java.util.ArrayList;
 import java.util.List;

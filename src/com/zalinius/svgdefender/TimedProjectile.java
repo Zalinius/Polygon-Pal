@@ -1,4 +1,4 @@
-package com.zalinius.SVGDefender;
+package com.zalinius.svgdefender;
 
 public class TimedProjectile implements Comparable<TimedProjectile>{
 	private final int startTime;
