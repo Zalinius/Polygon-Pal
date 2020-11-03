@@ -1,9 +1,12 @@
-package com.zalinius.svgdefender;
+package com.zalinius.svgdefender.level;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+
+import com.zalinius.svgdefender.Projectile;
+import com.zalinius.svgdefender.TimedProjectile;
 
 public class Level {
 	

@@ -5,6 +5,7 @@ import java.awt.Color;
 import com.zalinius.architecture.Locatable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.physics.Physical;
 
 public class ProjectileStrategyFactory {
 	

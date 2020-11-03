@@ -1,4 +1,4 @@
-package com.zalinius.svgdefender;
+package com.zalinius.svgdefender.physics;
 
 import com.zalinius.architecture.Locatable;
 import com.zalinius.physics.Point;

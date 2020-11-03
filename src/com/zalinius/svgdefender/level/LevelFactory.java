@@ -1,4 +1,4 @@
-package com.zalinius.svgdefender;
+package com.zalinius.svgdefender.level;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
@@ -10,6 +10,10 @@ import java.util.List;
 import com.zalinius.architecture.Locatable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.Projectile;
+import com.zalinius.svgdefender.ProjectileStrategy;
+import com.zalinius.svgdefender.ProjectileStrategyFactory;
+import com.zalinius.svgdefender.TimedProjectile;
 
 public class LevelFactory implements Iterator<Level>{
 

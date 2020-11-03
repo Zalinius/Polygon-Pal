@@ -1,4 +1,4 @@
-package com.zalinius.svgdefender;
+package com.zalinius.svgdefender.physics;
 
 import java.awt.Shape;
 

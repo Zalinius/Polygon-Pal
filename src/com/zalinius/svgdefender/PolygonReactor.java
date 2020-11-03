@@ -16,6 +16,7 @@ import com.zalinius.architecture.Locatable;
 import com.zalinius.architecture.input.Inputtable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.physics.Vertex;
 
 public class PolygonReactor implements Graphical, Locatable {
 

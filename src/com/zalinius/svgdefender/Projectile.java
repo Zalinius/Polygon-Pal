@@ -11,6 +11,7 @@ import com.zalinius.architecture.Locatable;
 import com.zalinius.architecture.Logical;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.physics.Vertex;
 
 public class Projectile implements Logical, Graphical, Locatable{
 	private Vertex position;

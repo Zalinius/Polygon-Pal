@@ -17,6 +17,7 @@ import com.zalinius.architecture.Locatable;
 import com.zalinius.architecture.input.Clickable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.physics.Vertex;
 
 public class Barrier implements Graphical {
 	private Vertex v1, v2;
