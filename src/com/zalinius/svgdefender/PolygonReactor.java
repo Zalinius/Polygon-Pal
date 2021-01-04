@@ -255,25 +255,32 @@ public class PolygonReactor implements Graphical, Locatable {
 
 		drawEyesAndMouth(g, center.center());
 	}
+	
+	public void happyFace(Graphics2D g, Point center) {
+		g.fill(centeredCircle(center.add(-20, -20), 10));
+		g.fill(centeredCircle(center.add(20, -20), 10));
 
+		g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 180, 180);
+	}
+	
+	public void deadFace(Graphics2D g, Point center) {
+		Line2D.Double line1 = new Line2D.Double(center.add(-25, -25).point2D(), center.add(-15, -15).point2D());
+		Line2D.Double line2 = new Line2D.Double(center.add(-15, -25).point2D(), center.add(-25, -15).point2D());
+		Line2D.Double line3 = new Line2D.Double(center.add(25, -25).point2D(), center.add(15, -15).point2D());
+		Line2D.Double line4 = new Line2D.Double(center.add(15, -25).point2D(), center.add(25, -15).point2D());
+		g.draw(line1);
+		g.draw(line2);
+		g.draw(line3);
+		g.draw(line4);
+		g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 0, 180);
+
+	}
 	public void drawEyesAndMouth(Graphics2D g, Point center) {
 		if(vertices.size() != 0) {
-
-			g.fill(centeredCircle(center.add(-20, -20), 10));
-			g.fill(centeredCircle(center.add(20, -20), 10));
-
-			g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 180, 180);
+			happyFace(g, center);
 		}
 		else {
-			Line2D.Double line1 = new Line2D.Double(center.add(-25, -25).point2D(), center.add(-15, -15).point2D());
-			Line2D.Double line2 = new Line2D.Double(center.add(-15, -25).point2D(), center.add(-25, -15).point2D());
-			Line2D.Double line3 = new Line2D.Double(center.add(25, -25).point2D(), center.add(15, -15).point2D());
-			Line2D.Double line4 = new Line2D.Double(center.add(15, -25).point2D(), center.add(25, -15).point2D());
-			g.draw(line1);
-			g.draw(line2);
-			g.draw(line3);
-			g.draw(line4);
-			g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 0, 180);
+			deadFace(g, center);
 		}
 
 	}
@@ -343,6 +350,22 @@ public class PolygonReactor implements Graphical, Locatable {
 	public void kill() {
 		vertices.clear();
 		edges.clear();		
+	}
+	
+	
+	public int edges() {
+		return edges.size();
+	}
+	public int shields() {
+		int shields = 0;
+		for (Iterator<Boolean> it = edges.iterator(); it.hasNext();) {
+			Boolean status = it.next();
+			if(status) {
+				shields ++;
+			}
+		}
+		
+		return shields;
 	}
 
 }

@@ -17,10 +17,12 @@ import com.zalinius.architecture.input.Clickable;
 import com.zalinius.architecture.input.Inputtable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
+import com.zalinius.svgdefender.audio.GameToMusicAdaptor;
+import com.zalinius.svgdefender.audio.TestTrack;
 import com.zalinius.svgdefender.level.Level;
 import com.zalinius.svgdefender.level.LevelFactory;
 
-public class SVGDefender extends GameContainer {
+public class SVGDefender extends GameContainer implements GameInterface{
 	
 	private PolygonReactor react;
 	
@@ -32,6 +34,9 @@ public class SVGDefender extends GameContainer {
 	private boolean gameOver;
 	
 	private double timeSinceLevelStart;
+	
+	private TestTrack music;
+	
 		
 	public SVGDefender() {
 		super("SVG Defender", res().width, res().height, Color.BLACK);
@@ -46,6 +51,8 @@ public class SVGDefender extends GameContainer {
 		timeSinceLevelStart = 0;
 		gameOver = false;
 		
+		music = new TestTrack(TestTrack.aContext(), new GameToMusicAdaptor(this));
+		music.play();
 		addControls(keyInputs(), mouseInputs());
 	}
 	
@@ -207,6 +214,47 @@ public class SVGDefender extends GameContainer {
 	public static void main(String[] args) {
 		SVGDefender game = new SVGDefender();
 		game.startGame();
+	}
+
+	
+	
+	@Override
+	public int level() {
+		return levels.getCurrentLevel();
+	}
+
+	@Override
+	public int levelCount() {
+		return levels.getTotalGameLevels();
+	}
+
+	@Override
+	public int polygonSize() {
+		return react.edges();
+	}
+
+	@Override
+	public int polygonWalls() {
+		return react.shields();
+	}
+	
+	@Override
+	public int polygonMaxSize() {
+		return 5;
+	}
+	@Override
+	public int polygonMinSize() {
+		return 3;
+	}
+
+	@Override
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	@Override
+	public boolean hasWon() {
+		return levels.won();
 	}
 
 

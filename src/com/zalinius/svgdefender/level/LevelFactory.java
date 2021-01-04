@@ -21,13 +21,16 @@ public class LevelFactory implements Iterator<Level>{
 	private Rectangle2D.Double playArea;
 	private Iterator<Level> levelIterator;
 
+	private int totalGameLevels;
+	private int currentLevel; // 0 <= currentLevel < totalGameLevels
+
 	public LevelFactory(Locatable player, Double playArea) {
 		this.player = player;
 		this.playArea = playArea;
 		this.levelIterator = makeLevels().iterator();
 	}
-	
-	
+
+
 	private List<Level> makeLevels(){
 		List<Level> levels = new ArrayList<>();
 		levels.add(level1());
@@ -35,28 +38,31 @@ public class LevelFactory implements Iterator<Level>{
 		levels.add(level3());
 		levels.add(level4());
 		levels.add(level5());
+		totalGameLevels = levels.size();
+		currentLevel = 0;
+
 		levels.add(winScreen());
-		
+
 		return levels;
 	}
-	
+
 	private Level level1() {
 		List<TimedProjectile> timedProjectiles = new ArrayList<>();
 		List<Projectile> projectiles = makeOffscreenProjectiles(10, ProjectileStrategyFactory.straightPath(100, 20));
 		for (int i = 0; i < projectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(i, projectiles.get(i)));
 		}
-		
+
 		return new Level(timedProjectiles, "Level 1", "Avoid the attackers, with WASD", false);
 	}
-	
+
 	private Level level2() {
 		List<TimedProjectile> timedProjectiles = new ArrayList<>();
 		List<Projectile> projectiles = makeOffscreenProjectiles(10, ProjectileStrategyFactory.straightPath(125, 50));
 		for (int i = 0; i < projectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(i*8/10, projectiles.get(i)));
 		}
-		
+
 		return new Level(timedProjectiles, "Level 2", "Your shield will be repaired every level", false);
 	}
 
@@ -67,7 +73,7 @@ public class LevelFactory implements Iterator<Level>{
 		for (int i = 0; i < projectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(i, projectiles.get(i)));
 		}
-		
+
 		return new Level(timedProjectiles, "Level 3", "Drag the barrier to defend yourself", true);
 	}
 
@@ -79,7 +85,7 @@ public class LevelFactory implements Iterator<Level>{
 		for (int i = 0; i < projectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(i*7/10, projectiles.get(i)));
 		}
-		
+
 		return new Level(timedProjectiles, "Level 4", "", false);
 	}
 
@@ -92,16 +98,16 @@ public class LevelFactory implements Iterator<Level>{
 		for (int i = 0; i < projectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(i*5/10, projectiles.get(i)));
 		}
-		
+
 		List<Projectile> instantProjectiles = makeOffscreenProjectiles(10, ProjectileStrategyFactory.straightPath(125, 50));
 		for (int i = 0; i < instantProjectiles.size(); i++) {
 			timedProjectiles.add(new TimedProjectile(10, instantProjectiles.get(i)));
 		}
 
-		
+
 		return new Level(timedProjectiles, "Final Level", "", true);
 	}
-	
+
 	private Level winScreen() {
 		List<TimedProjectile> timedProjectiles = new ArrayList<>();
 		timedProjectiles.add(new TimedProjectile(Integer.MAX_VALUE, null));
@@ -123,34 +129,36 @@ public class LevelFactory implements Iterator<Level>{
 
 		return projectiles;
 	}
-	
-//	
-//	public Level testLevel() {
-//		List<TimedProjectile> timedProjectiles = new ArrayList<>();
-//		for (int i = 0; i < 20; i++) {
-//			Projectile p = createOffScreenProjectile(ProjectileStrategyFactory.followWithCentripetalTurning(player, 90, 150));
-//			timedProjectiles.add(new TimedProjectile(i, p));
-//		}
-//		
-//		return new Level(timedProjectiles);
-//	}
-	
+
+
+
+	//	
+	//	public Level testLevel() {
+	//		List<TimedProjectile> timedProjectiles = new ArrayList<>();
+	//		for (int i = 0; i < 20; i++) {
+	//			Projectile p = createOffScreenProjectile(ProjectileStrategyFactory.followWithCentripetalTurning(player, 90, 150));
+	//			timedProjectiles.add(new TimedProjectile(i, p));
+	//		}
+	//		
+	//		return new Level(timedProjectiles);
+	//	}
+
 	public Projectile createOffScreenProjectile(ProjectileStrategy strategy) {
 		double spawnAngle = Math.random() * 2 * Math.PI;
-		
+
 		double width = playArea.getWidth();
 		double height = playArea.getHeight();
 		Point gameCenter = new Point(playArea.getCenterX(), playArea.getCenterY());
-		
+
 		double spawnRadius = Math.sqrt(width * width + height * height) / 2d;
 		spawnRadius *=  1.1; //safetymargin
-		
+
 		Vector spawnVector = new Vector(Math.cos(spawnAngle), Math.sin(spawnAngle)).scale(spawnRadius);
 		Point spawnLocation = gameCenter.add(spawnVector);
-		
+
 		double angleVariation = Math.random()/2 - 0.25;
 		Vector initialDirection = new Vector(Math.cos(spawnAngle + angleVariation), Math.sin(spawnAngle  +angleVariation)).scale(spawnRadius);
-		
+
 		Vector initialVelocity = initialDirection.normalize().scale(-1).scale(strategy.initialSpeed());
 		return new Projectile(spawnLocation, initialVelocity, strategy);
 	}
@@ -164,8 +172,22 @@ public class LevelFactory implements Iterator<Level>{
 
 	@Override
 	public Level next() {
+		if(currentLevel + 1 < totalGameLevels) {
+			currentLevel ++;
+		}
+		
 		return levelIterator.next();
 	}
 
-	
+
+	public int getCurrentLevel() {
+		return currentLevel;
+	}
+	public int getTotalGameLevels() {
+		return totalGameLevels;
+	}
+	public boolean won() {
+		return currentLevel == totalGameLevels;
+	}
+
 }
