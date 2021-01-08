@@ -43,15 +43,37 @@ public class GameToMusicAdaptor {
 	}
 	
 	public float baseDrumIntensity() {
-		double min = 0.2;
-		double max = 0.6;
+		double min = 0.3;
+		double max = 0.8;
 		
 		return (float) Interpolate.linearMapping(gameInfo.polygonMaxSize(), gameInfo.polygonMinSize(), gameInfo.polygonSize(), min, max);
 	}
 	
+	public int lightPercussionActivity() {
+		int min = 0;
+		int max = 4;
+
+		int lowValue = 0;
+		int highValue = 10;
+		int nearbyEnnemies = gameInfo.ennemiesNearby() % highValue;
+		
+		double value = Interpolate.linearMapping(lowValue, highValue, nearbyEnnemies, min, max);		
+		return (int)Math.round(value);
+	}
 	
 	public float beatsPerMinutes() {
-		return 120f;
+		double minBPM = 90;
+		double maxBPM = 180;
+		double current = Interpolate.linearMapping(1, gameInfo.levelCount(), gameInfo.level(), minBPM, maxBPM);
+
+		return (float) current;
+	}
+	
+	//in ms
+	public float beatLength() {
+		final int SECONDS_IN_MINUTE = 60;
+		final int MILLISECONDS_IN_SECOND = 1000;
+		return (SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND) / beatsPerMinutes();
 	}
 
 }

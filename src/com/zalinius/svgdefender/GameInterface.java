@@ -12,4 +12,6 @@ public interface GameInterface {
 	
 	public boolean isGameOver();
 	public boolean hasWon();
+	
+	public int ennemiesNearby();
 }

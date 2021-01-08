@@ -1,11 +1,14 @@
 package com.zalinius.svgdefender.audio;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.zalinius.svgdefender.audio.pitch.IndexList;
+import com.zalinius.svgdefender.audio.pitch.Melody;
 import com.zalinius.svgdefender.audio.pitch.Note;
 import com.zalinius.svgdefender.audio.pitch.PitchPlus;
 import com.zalinius.svgdefender.audio.pitch.RandomIndexStrategyFactory;
@@ -19,8 +22,11 @@ import net.beadsproject.beads.core.Bead;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.core.io.JavaSoundAudioIO;
 import net.beadsproject.beads.data.Buffer;
+import net.beadsproject.beads.ugens.Clip;
 import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.Envelope;
+import net.beadsproject.beads.ugens.NBitsConverter;
+import net.beadsproject.beads.ugens.Reverb;
 import net.beadsproject.beads.ugens.Static;
 
 public class TestTrack {
@@ -48,58 +54,70 @@ public class TestTrack {
 		return ac;
 	}
 
-	public final int BEAT_LENGTH = 500;
-	private int currentBeatLength;
-
 	private final AudioContext ac;
 	private final Clock clock;
 	private final SoundFactory sf;
 	private RandomNotes notes;
-	private Deque<Buffer> sounds;
-	private Deque<String> names;
+	private Melody bassMelody;
 	
 	private GameToMusicAdaptor musicInfo;
 
 	public TestTrack(AudioContext ac, GameToMusicAdaptor musicInfo) {
 		this.ac = ac;
 		AudioContext.setDefaultContext(ac);
-		clock = new Clock(ac, BEAT_LENGTH);
 		this.musicInfo = musicInfo;
+		clock = new Clock(ac, musicInfo.beatLength());
 
 		sf = new SoundFactory();
 		List<RelativeNote> triadNotes = ScaleFactory.arrayToList(PitchPlus.pentatonic).stream().map(i -> new RelativeNote(i)).collect(Collectors.toList());
 		notes = new RandomNotes(triadNotes, Note.MIDDLE_C.midiNote(), RandomIndexStrategyFactory.periodIncreasing(3, triadNotes.size(), true));
+		bassMelody = createBassMelody();
 		
-		sounds = new ArrayDeque<>();
+	}
+	
+	public static Melody createBassMelody() {
+		List<Integer> indices = new ArrayList<>();
+		indices.add(5);
+		indices.add(5);
+		indices.add(5);
+		indices.add(5);
 
-		currentBeatLength = BEAT_LENGTH;
-//		sounds.add(SoundFactory.WIND_SOFT);
-//		sounds.add(SoundFactory.WIND_GLASS);
-//		
-//		sounds.add(SoundFactory.RESONANT);
-//		sounds.add(SoundFactory.RESONANT_SHARP);
-//		sounds.add(SoundFactory.RESONANT_STRONG);
-//		
-//		sounds.add(SoundFactory.STRING_SOFT);
-//		sounds.add(SoundFactory.STRING_STRONG);
-		sounds.add(SoundFactory.STRING_SHARP);
-//		
-//		sounds.add(SoundFactory.SAW_SOFT);
-//		sounds.add(SoundFactory.SAW_STRONG);
-//		sounds.add(SoundFactory.SAW_SHARP);
-		
-		names = new ArrayDeque<>();
-		names.add("Soft Wind");
-		names.add("Glassy Wind");
-		names.add("Resonant");
-		names.add("Sharp Resonance");
-		names.add("Strong Resonance");
-		names.add("Soft Strings");
-		names.add("Strong Strings");
-		names.add("Sharp Strings");
-		names.add("Soft Saw");
-		names.add("Strong Saw");
-		names.add("Sharp Saw");
+		indices.add(5);
+		indices.add(6);
+		indices.add(7);
+		indices.add(6);
+
+		indices.add(5);
+		indices.add(5);
+		indices.add(5);
+		indices.add(5);
+
+		indices.add(5);
+		indices.add(4);
+		indices.add(3);
+		indices.add(2);
+
+		indices.add(2);
+		indices.add(2);
+		indices.add(2);
+		indices.add(2);
+
+		indices.add(2);
+		indices.add(3);
+		indices.add(4);
+		indices.add(3);
+
+		indices.add(2);
+		indices.add(2);
+		indices.add(2);
+		indices.add(2);
+
+		indices.add(2);
+		indices.add(3);
+		indices.add(4);
+		indices.add(5);
+
+		return new Melody(new Note(Note.MIDDLE_C.midiNote() - 3*Note.OCTAVE_LENGTH), ScaleFactory.majorScale(), new IndexList(indices));
 	}
 
 	public void play() {
@@ -114,64 +132,24 @@ public class TestTrack {
 
 			public void messageReceived(Bead message) {
 				Clock c = (Clock)message;
+				c.setIntervalEnvelope(new Static(musicInfo.beatLength()));
+				if(c.getCount() % 16 == 8) {
 
-				//	System.out.println(c.getCount() + " " + c.getBeatCount() + " " + c.isBeat());
-				//
-				//				        if(c.isBeat()) {
-				//				          //choose some nice frequencies
-				//				          if(random(1) < 0.5) return;
-				//				          start = (int)random(3);
-				//				          
-				////				          switch (start) {
-				////						case 0:
-				////							pitch = 0;
-				////							break;
-				////						case 1:
-				////							pitch = 7;
-				////							break;
-				////						case 2:
-				////							pitch = 9;
-				////							break;
-				////						default:
-				////							break;
-				////						}
-				//				          int pitch1 = pitch + 0;
-				//				          int pitch2 = pitch + 4;
-				//				          int pitch3 = pitch + 7;
-				//				          float freq1 = Pitch.mtof(pitch1 + ((int)random(2) + 2) * 12 + 32);
-				//				          float freq2 = Pitch.mtof(pitch2 + ((int)random(2) + 2) * 12 + 32);
-				//				          float freq3 = Pitch.mtof(pitch3 + ((int)random(2) + 2) * 12 + 32);
-				//				    
-				//				          WavePlayer wp1 = new WavePlayer(ac, freq1, Buffer.TRIANGLE);
-				//				          WavePlayer wp2 = new WavePlayer(ac, freq2, Buffer.TRIANGLE);
-				//				          WavePlayer wp3 = new WavePlayer(ac, freq3, Buffer.TRIANGLE);
-				//				          Gain g = new Gain(ac, 3, new Envelope(ac, 0));
-				//				          g.addInput(wp1);
-				//				          g.addInput(wp2);
-				//				          g.addInput(wp3);
-				//				        //  ac.out.addInput(g);
-				//				          ((Envelope)g.getGainUGen()).addSegment(0.1f, random(50));
-				//				          ((Envelope)g.getGainUGen()).addSegment(0, random(1000), new KillTrigger(g));
-				//				       }
-				//
-//				if(c.getCount() % 8 == 0) {
-//
-//					UGen bass = sf.bass(32);
-//					ac.out.addInput(bass);
-//				}
-				if(c.getCount() % 16 == 8 || c.getBeatCount() % 16 == 15 && c.getCount() % 4 == 2) {
+					UGen bass = sf.bass(bassMelody.next().midiNote());
+					ac.out.addInput(bass);
+				}
+				if(useLightPercussion(c.getCount(), musicInfo.lightPercussionActivity())) {
+				//if(c.getCount() % 16 == 8 || c.getBeatCount() % 16 == 0 && c.getCount() % 4 == 2) {
 					UGen perc = sf.lightPercussion(50f);
 					ac.out.addInput(perc);
 				}
 				if(c.getCount() % 16 == 0 && musicInfo.baseDrumActive()) {
-					System.out.println("BASS: " + musicInfo.baseDrumIntensity());
 					UGen perc = sf.heavyPercussion(100f, musicInfo.baseDrumIntensity());
 					ac.out.addInput(perc);
 				}
-				final Buffer buffer = sounds.peek();
+				Buffer buffer = musicInfo.themeSynth();
 
 				if(c.isBeat() && (c.getBeatCount() % 4 != 3 || c.getBeatCount() % 16 == 15)) {
-					System.out.println(names.peek());
 					int note =-(c.getBeatCount() / 8) * 6;
 					note = 0;
 					switch (c.getBeatCount() % 8) {
@@ -198,8 +176,6 @@ public class TestTrack {
 						break;
 					case 7:
 						note += 70;
-						sounds.addLast(sounds.removeFirst());
-						names.addLast(names.removeFirst());
 						break;
 
 					default:
@@ -213,7 +189,11 @@ public class TestTrack {
 
 				    //ac.out.addInput(notePlayed);
 				//	ac.out.addInput(notePlayed2);
-					ac.out.addInput(notePlayed3);
+					
+					Reverb ugen = new Reverb(ac);
+					ugen.setSize(1);
+					ugen.addInput(notePlayed3);
+					//ac.out.addInput(ugen);
 										
 				}
 //				
@@ -241,6 +221,23 @@ public class TestTrack {
 
 	}
 
+	private boolean useLightPercussion(long count, int percussionActivity) {
+		count %= 32;
+		switch (percussionActivity) {
+		case 0:
+			return count % 32 == 0;
+		case 1:
+			return count % 16 == 0;
+		case 2:
+			return count % 16 == 0 || count == 8;
+		case 3:
+			return count % 8 == 0;
+		case 4:
+			return (count % 16 / 4) != 3 && (count % 4 == 0);
+		default:
+			return count % 32 == 0;
+		}
+	}
 
 	public void stop() {
 		clock.kill();

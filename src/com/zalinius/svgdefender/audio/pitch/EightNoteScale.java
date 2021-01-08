@@ -9,4 +9,6 @@ public interface EightNoteScale extends Iterable<RelativeNote>{
 	public RelativeNote sixth();
 	public RelativeNote seventh();
 	public RelativeNote eighth();
+	
+	public RelativeNote nth(int index);
 }

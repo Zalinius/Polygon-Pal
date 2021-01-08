@@ -1,6 +1,7 @@
 package com.zalinius.svgdefender.audio.synths;
 
 import com.zalinius.svgdefender.audio.pitch.Note;
+import com.zalinius.svgdefender.audio.pitch.PitchPlus;
 
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;
@@ -24,7 +25,7 @@ public class SoundFactory {
 		return g;
 	}
 	public UGen heavyPercussion(float duration, float intensity) {
-		Gain g = new Gain(1, new Envelope(intensity));
+		Gain g = new Gain(1, new Envelope(intensity/3f)); //Divide by 3 because of the three notes
 		g.addInput(new WavePlayer(new Note(27).frequency(), SoundFactory.RESONANT));
 		g.addInput(new WavePlayer(new Note(28).frequency(), SoundFactory.RESONANT));
 		g.addInput(new WavePlayer(new Note(29).frequency(), SoundFactory.RESONANT));
@@ -32,12 +33,12 @@ public class SoundFactory {
 		return g;
 	}
 	
-	public UGen bass(float midiNote) {
+	public UGen bass(int midiNote) {
 		float freq = Pitch.mtof(midiNote);
-		WavePlayer wp = new WavePlayer(freq, Buffer.SAW);
+		WavePlayer wp = new WavePlayer(freq, RESONANT);
 		Gain g = new Gain(1, new Envelope(0));
 		g.addInput(wp);
-		((Envelope)g.getGainUGen()).addSegment(0.1f, 50);
+		((Envelope)g.getGainUGen()).addSegment(0.2f, 50);
 		((Envelope)g.getGainUGen()).addSegment(0, 200, new KillTrigger(g));
 		
 		return g;

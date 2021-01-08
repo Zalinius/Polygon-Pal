@@ -172,7 +172,7 @@ public class LevelFactory implements Iterator<Level>{
 
 	@Override
 	public Level next() {
-		if(currentLevel + 1 < totalGameLevels) {
+		if(currentLevel < totalGameLevels) {
 			currentLevel ++;
 		}
 		

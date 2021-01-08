@@ -67,6 +67,10 @@ public class ScaleFactory {
 			public Iterator<RelativeNote> iterator() {
 				return relativeNotes.iterator();
 			}
+			@Override
+			public RelativeNote nth(int index) {
+				return relativeNotes.get(index);
+			}
 
 		};
 	}

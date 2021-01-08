@@ -257,5 +257,19 @@ public class SVGDefender extends GameContainer implements GameInterface{
 		return levels.won();
 	}
 
+	@Override
+	public int ennemiesNearby() {
+		double threshold = 300;
+		int nearbyProjectiles = 0;
+		List<Projectile> projectilesCopy = new ArrayList<>(projectiles);
+		for (Iterator<Projectile> it = projectilesCopy.iterator(); it.hasNext();) {
+			Projectile projectile = it.next();
+			if(Point.distance(projectile.center(), react.center()) < threshold) {
+				nearbyProjectiles ++;
+			}
+		}
+		return nearbyProjectiles;
+	}
+
 
 }

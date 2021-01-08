@@ -7,15 +7,15 @@ import java.util.Random;
 
 public class RandomIndexStrategyFactory {
 
-	public static abstract class AbstractRandomIndexStrategy implements RandomIndexStrategy{
+	public static abstract class AbstractRandomRandomIndexStrategy implements RandomIndexStrategy{
 		protected Random rand;
-		public AbstractRandomIndexStrategy() {
+		public AbstractRandomRandomIndexStrategy() {
 			rand = new Random();
 		}
 	}
 	
 	public static RandomIndexStrategy random() {
-		return new AbstractRandomIndexStrategy() {
+		return new AbstractRandomRandomIndexStrategy() {
 			
 			@Override
 			public int nextIndex(int bound) {
@@ -25,7 +25,7 @@ public class RandomIndexStrategyFactory {
 	}
 	
 	public static RandomIndexStrategy noConsecutiveRepetition() {
-		return new AbstractRandomIndexStrategy() {
+		return new AbstractRandomRandomIndexStrategy() {
 			private int lastIndex = -1;
 			@Override
 			public int nextIndex(int bound) {
@@ -48,7 +48,7 @@ public class RandomIndexStrategyFactory {
 	
 	
 	public static RandomIndexStrategy increasing(final int maxJump) {
-		return new AbstractRandomIndexStrategy() {
+		return new AbstractRandomRandomIndexStrategy() {
 			private int lastIndex = -1;
 			@Override
 			public int nextIndex(int bound) {
@@ -70,7 +70,7 @@ public class RandomIndexStrategyFactory {
 	}
 	
 	public static RandomIndexStrategy decreasing(final int maxJump) {
-		return new AbstractRandomIndexStrategy() {
+		return new AbstractRandomRandomIndexStrategy() {
 			private int lastIndex = -1;
 			@Override
 			public int nextIndex(int bound) {
@@ -101,7 +101,7 @@ public class RandomIndexStrategyFactory {
 			throw new RuntimeException("Period must be lesser or equal to bound: " + period + ", " + bound);
 		}
 		
-		return new AbstractRandomIndexStrategy() {
+		return new AbstractRandomRandomIndexStrategy() {
 			private int countInPeriod = 0;
 			private List<Integer> indices = new ArrayList<>();
 			
