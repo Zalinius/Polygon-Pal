@@ -18,7 +18,7 @@ import com.zalinius.architecture.input.Inputtable;
 import com.zalinius.physics.Point;
 import com.zalinius.physics.Vector;
 import com.zalinius.svgdefender.audio.GameToMusicAdaptor;
-import com.zalinius.svgdefender.audio.TestTrack;
+import com.zalinius.svgdefender.audio.GameTrack;
 import com.zalinius.svgdefender.level.Level;
 import com.zalinius.svgdefender.level.LevelFactory;
 
@@ -35,7 +35,7 @@ public class SVGDefender extends GameContainer implements GameInterface{
 	
 	private double timeSinceLevelStart;
 	
-	private TestTrack music;
+	private GameTrack music;
 	
 		
 	public SVGDefender() {
@@ -51,7 +51,7 @@ public class SVGDefender extends GameContainer implements GameInterface{
 		timeSinceLevelStart = 0;
 		gameOver = false;
 		
-		music = new TestTrack(TestTrack.aContext(), new GameToMusicAdaptor(this));
+		music = new GameTrack(GameTrack.aContext(), new GameToMusicAdaptor(this));
 		music.play();
 		addControls(keyInputs(), mouseInputs());
 	}

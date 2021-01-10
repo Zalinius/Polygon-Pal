@@ -29,7 +29,7 @@ import net.beadsproject.beads.ugens.NBitsConverter;
 import net.beadsproject.beads.ugens.Reverb;
 import net.beadsproject.beads.ugens.Static;
 
-public class TestTrack {
+public class GameTrack {
 
 
 //	public static void main(String[] args) throws InterruptedException {
@@ -62,7 +62,7 @@ public class TestTrack {
 	
 	private GameToMusicAdaptor musicInfo;
 
-	public TestTrack(AudioContext ac, GameToMusicAdaptor musicInfo) {
+	public GameTrack(AudioContext ac, GameToMusicAdaptor musicInfo) {
 		this.ac = ac;
 		AudioContext.setDefaultContext(ac);
 		this.musicInfo = musicInfo;
