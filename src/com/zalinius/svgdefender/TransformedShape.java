@@ -5,7 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 
-import com.zalinius.architecture.Graphical;
+import com.zalinius.zje.architecture.Graphical;
 
 public class TransformedShape implements Graphical {
 	

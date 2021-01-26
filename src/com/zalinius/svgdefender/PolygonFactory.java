@@ -3,7 +3,7 @@ package com.zalinius.svgdefender;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zalinius.physics.Point;
+import com.zalinius.zje.physics.Point;
 
 public class PolygonFactory {
 	public static List<Point> simplePolygon(Point center, int sides) {

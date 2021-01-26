@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Notes {
 	
-	private Map<Integer, Note> notes;
+	private Map<Integer, AbsolutePitch> notes;
 	private int lengthInBeats;
 	
 	

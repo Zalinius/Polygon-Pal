@@ -1,8 +1,8 @@
 package com.zalinius.svgdefender.physics;
 
-import com.zalinius.architecture.Locatable;
-import com.zalinius.physics.Point;
-import com.zalinius.physics.Vector;
+import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.physics.Point;
+import com.zalinius.zje.physics.Vector;
 
 public interface Physical extends Locatable{
 	

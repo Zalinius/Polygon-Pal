@@ -11,12 +11,13 @@ import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import com.zalinius.architecture.Graphical;
-import com.zalinius.architecture.Locatable;
-import com.zalinius.architecture.input.Inputtable;
-import com.zalinius.physics.Point;
-import com.zalinius.physics.Vector;
+
 import com.zalinius.svgdefender.physics.Vertex;
+import com.zalinius.zje.architecture.Graphical;
+import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.architecture.input.Inputtable;
+import com.zalinius.zje.physics.Point;
+import com.zalinius.zje.physics.Vector;
 
 public class PolygonReactor implements Graphical, Locatable {
 

@@ -12,15 +12,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.zalinius.architecture.GameContainer;
-import com.zalinius.architecture.input.Clickable;
-import com.zalinius.architecture.input.Inputtable;
-import com.zalinius.physics.Point;
-import com.zalinius.physics.Vector;
 import com.zalinius.svgdefender.audio.GameToMusicAdaptor;
 import com.zalinius.svgdefender.audio.GameTrack;
 import com.zalinius.svgdefender.level.Level;
 import com.zalinius.svgdefender.level.LevelFactory;
+import com.zalinius.zje.architecture.GameContainer;
+import com.zalinius.zje.architecture.input.Clickable;
+import com.zalinius.zje.architecture.input.Inputtable;
+import com.zalinius.zje.physics.Point;
+import com.zalinius.zje.physics.Vector;
 
 public class SVGDefender extends GameContainer implements GameInterface{
 	

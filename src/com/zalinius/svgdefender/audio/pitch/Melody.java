@@ -3,17 +3,22 @@ package com.zalinius.svgdefender.audio.pitch;
 import java.util.Iterator;
 import java.util.List;
 
-public class Melody implements Iterator<Note> {
+public class Melody implements Iterator<AbsolutePitch> {
 
 	private int root;
-	private EightNoteScale scale;
+	private EightPitchScale scale;
 	private IndexStrategy strategy;
 	
 	
-	public Melody(Note root, EightNoteScale scale, IndexStrategy strategy) {
-		this.root = root.midiNote();
+	public Melody(AbsolutePitch root, EightPitchScale scale, IndexStrategy strategy) {
+		this.root = root.midiPitch();
 		this.scale = scale;
 		this.strategy = strategy;
+	}
+	
+	public void setScale(EightPitchScale newScale) {
+		System.out.println(newScale);
+		this.scale = newScale;
 	}
 	
 	
@@ -22,7 +27,7 @@ public class Melody implements Iterator<Note> {
 		return true;
 	}
 	@Override
-	public Note next() {
+	public AbsolutePitch next() {
 		return scale.nth(strategy.nextIndex()).absoluteNote(root);
 	}
 	

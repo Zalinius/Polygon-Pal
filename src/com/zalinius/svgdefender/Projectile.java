@@ -6,12 +6,12 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 
-import com.zalinius.architecture.Graphical;
-import com.zalinius.architecture.Locatable;
-import com.zalinius.architecture.Logical;
-import com.zalinius.physics.Point;
-import com.zalinius.physics.Vector;
 import com.zalinius.svgdefender.physics.Vertex;
+import com.zalinius.zje.architecture.Graphical;
+import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.architecture.Logical;
+import com.zalinius.zje.physics.Point;
+import com.zalinius.zje.physics.Vector;
 
 public class Projectile implements Logical, Graphical, Locatable{
 	private Vertex position;

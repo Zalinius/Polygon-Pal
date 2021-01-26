@@ -1,6 +1,6 @@
 package com.zalinius.svgdefender.audio.synths;
 
-import com.zalinius.svgdefender.audio.pitch.Note;
+import com.zalinius.svgdefender.audio.pitch.AbsolutePitch;
 import com.zalinius.svgdefender.audio.pitch.PitchPlus;
 
 import net.beadsproject.beads.core.UGen;
@@ -16,45 +16,44 @@ import net.beadsproject.beads.ugens.WavePlayer;
 public class SoundFactory {
 
 
-	public UGen lightPercussion(float duration) {
+	public UGen lightPercussion(double duration, double intensity) {
 		Noise n = new Noise();
-		Gain g = new Gain(1, new Envelope(0.01f));
+		Gain g = new Gain(1, new Envelope((float)intensity));
 		g.addInput(n);
-		((Envelope)g.getGainUGen()).addSegment(0, duration, new KillTrigger(g));
+		((Envelope)g.getGainUGen()).addSegment(0f, (float)duration, new KillTrigger(g));
 		
 		return g;
 	}
-	public UGen heavyPercussion(float duration, float intensity) {
-		Gain g = new Gain(1, new Envelope(intensity/3f)); //Divide by 3 because of the three notes
-		g.addInput(new WavePlayer(new Note(27).frequency(), SoundFactory.RESONANT));
-		g.addInput(new WavePlayer(new Note(28).frequency(), SoundFactory.RESONANT));
-		g.addInput(new WavePlayer(new Note(29).frequency(), SoundFactory.RESONANT));
-		((Envelope)g.getGainUGen()).addSegment(0.0f, duration, new KillTrigger(g));
+	
+	public UGen heavyPercussion(double duration, double intensity) {
+		Gain g = new Gain(1, new Envelope((float) (intensity/3))); //Divide by 3 because of the three notes
+		g.addInput(new WavePlayer(new AbsolutePitch(27).frequency(), SoundFactory.RESONANT));
+		g.addInput(new WavePlayer(new AbsolutePitch(28).frequency(), SoundFactory.RESONANT));
+		g.addInput(new WavePlayer(new AbsolutePitch(29).frequency(), SoundFactory.RESONANT));
+		((Envelope)g.getGainUGen()).addSegment(0f, (float)duration, new KillTrigger(g));
 		return g;
 	}
 	
-	public UGen bass(int midiNote) {
+	public UGen bass(int midiNote, double intensity) {
 		float freq = Pitch.mtof(midiNote);
 		WavePlayer wp = new WavePlayer(freq, RESONANT);
 		Gain g = new Gain(1, new Envelope(0));
 		g.addInput(wp);
-		((Envelope)g.getGainUGen()).addSegment(0.2f, 50);
+		((Envelope)g.getGainUGen()).addSegment((float)intensity, 50);
 		((Envelope)g.getGainUGen()).addSegment(0, 200, new KillTrigger(g));
 		
 		return g;
 	}
 	
-	public UGen mainNote(float midiNote, int eawr) {
-		return mainNote(midiNote, Buffer.SINE);
-	}
-
-	public UGen mainNote(float midiNote, Buffer buffer) {
+	public UGen mainNote(int midiNote, Buffer buffer) {
 		float freq = Pitch.mtof(midiNote);
 		WavePlayer wp = new WavePlayer(freq, buffer);
 		Gain g = new Gain(1, new Envelope(0));
 		g.addInput(wp);
-		((Envelope)g.getGainUGen()).addSegment(0.2f, 100);
-		((Envelope)g.getGainUGen()).addSegment(0, 400, new KillTrigger(g));
+		
+		((Envelope)g.getGainUGen()).addSegment(0.1f, 400);
+		((Envelope)g.getGainUGen()).addSegment(0.1f, 700);
+		((Envelope)g.getGainUGen()).addSegment(0, 1000, new KillTrigger(g));
 		
 		return g;
 	}

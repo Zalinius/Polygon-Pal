@@ -7,23 +7,26 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class RandomNotes implements Iterator<Note>{
+import com.zalinius.zje.math.random.RandomIndexStrategy;
+import com.zalinius.zje.math.random.RandomIndexStrategyFactory;
+
+public class RandomNotes implements Iterator<AbsolutePitch>{
 	
-	private List<Note> notes;
+	private List<AbsolutePitch> notes;
 	private RandomIndexStrategy randomStrategy;
 	
 	private static RandomIndexStrategy defaultRandomStrategy() {
 		return RandomIndexStrategyFactory.random();
 	}
 	
-	public RandomNotes(List<RelativeNote> relativeNotes, int root) {
+	public RandomNotes(List<RelativePitch> relativeNotes, int root) {
 		this(relativeNotes, root, defaultRandomStrategy());
 	}
-	public RandomNotes(List<RelativeNote> relativeNotes, int root, RandomIndexStrategy strategy) {
+	public RandomNotes(List<RelativePitch> relativeNotes, int root, RandomIndexStrategy strategy) {
 		this(relativeNotes.stream().map(note -> note.absoluteNote(root)).collect(Collectors.toList()), strategy);
 	}
 	
-	public RandomNotes(List<Note> notes, RandomIndexStrategy strategy) {
+	public RandomNotes(List<AbsolutePitch> notes, RandomIndexStrategy strategy) {
 		this.notes = notes;
 		this.randomStrategy = strategy;
 	}
@@ -34,7 +37,7 @@ public class RandomNotes implements Iterator<Note>{
 	}
 
 	@Override
-	public Note next() {
+	public AbsolutePitch next() {
 		int index = randomStrategy.nextIndex(notes.size());
 		return notes.get(index);
 	}
