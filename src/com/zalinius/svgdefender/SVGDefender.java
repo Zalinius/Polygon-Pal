@@ -21,6 +21,8 @@ import com.zalinius.zje.architecture.input.Clickable;
 import com.zalinius.zje.architecture.input.Inputtable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
+import com.zalinius.zje.plugins.BackgroundColor;
+import com.zalinius.zje.plugins.Plugin;
 
 public class SVGDefender extends GameContainer implements GameInterface{
 	
@@ -39,7 +41,7 @@ public class SVGDefender extends GameContainer implements GameInterface{
 	
 		
 	public SVGDefender() {
-		super("SVG Defender", res().width, res().height, Color.BLACK);
+		super("SVG Defender", res().width, res().height);
 		react = new PolygonReactor(new Point(playArea().getCenterX(), playArea().getCenterY()));
 		
 		projectiles = new LinkedList<>();
@@ -54,6 +56,13 @@ public class SVGDefender extends GameContainer implements GameInterface{
 		music = new GameTrack(GameTrack.aContext(), new GameToMusicAdaptor(this));
 		music.play();
 		addControls(keyInputs(), mouseInputs());
+	}
+	
+	@Override
+	public List<Plugin> getPlugins() {
+		List<Plugin> plugins = new ArrayList<>();
+		plugins.add(new BackgroundColor(Color.BLACK));
+		return plugins;
 	}
 	
 	public static Dimension res() {
