@@ -16,6 +16,7 @@ import com.zalinius.polygonpal.audio.GameToMusicAdaptor;
 import com.zalinius.polygonpal.audio.GameTrack;
 import com.zalinius.polygonpal.level.Level;
 import com.zalinius.polygonpal.level.LevelFactory;
+import com.zalinius.polygonpal.pal.PolygonPalPlayer;
 import com.zalinius.zje.architecture.GameContainer;
 import com.zalinius.zje.architecture.input.Clickable;
 import com.zalinius.zje.architecture.input.Inputtable;
@@ -42,7 +43,7 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 		
 	public PolygonPalGame() {
 		super("Polygon Pal c:", res().width, res().height);
-		player = new PolygonPalPlayer(new Point(playArea().getCenterX(), playArea().getCenterY()));
+		player = new PolygonPalPlayer(new Point(playArea().getCenterX(), playArea().getCenterY()), this);
 		
 		projectiles = new LinkedList<>();
 		barriers = new ArrayList<>();
@@ -278,6 +279,11 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 			}
 		}
 		return nearbyProjectiles;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return !player.playerDestroyed();
 	}
 
 

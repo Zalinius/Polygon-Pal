@@ -1,4 +1,4 @@
-package com.zalinius.polygonpal;
+package com.zalinius.polygonpal.pal;
 
 import java.util.ArrayList;
 import java.util.List;
