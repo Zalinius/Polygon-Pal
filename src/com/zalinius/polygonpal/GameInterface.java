@@ -10,6 +10,7 @@ public interface GameInterface {
 	public int polygonMaxSize();
 	public int polygonWalls();
 	
+	public boolean isAlive();
 	public boolean isGameOver();
 	public boolean hasWon();
 	

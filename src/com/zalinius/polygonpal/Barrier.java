@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.zalinius.polygonpal.pal.PolygonFactory;
+import com.zalinius.polygonpal.pal.PolygonPalPlayer;
 import com.zalinius.polygonpal.physics.Vertex;
 import com.zalinius.zje.architecture.Graphical;
 import com.zalinius.zje.architecture.Locatable;

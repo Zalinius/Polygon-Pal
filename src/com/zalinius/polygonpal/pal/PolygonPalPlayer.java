@@ -1,4 +1,4 @@
-package com.zalinius.polygonpal;
+package com.zalinius.polygonpal.pal;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.zalinius.polygonpal.GameInterface;
+import com.zalinius.polygonpal.Projectile;
 import com.zalinius.polygonpal.physics.Vertex;
 import com.zalinius.zje.architecture.Graphical;
 import com.zalinius.zje.architecture.Locatable;
@@ -24,16 +26,17 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 	private List<Vertex> vertices;
 	private List<Boolean> edges;
 	private Vertex center;
+	private PolygonPalFace face;
 
 	private static final int EDGE_STIFFNESS = 30;
 	private static final int BROKEN_EDGE_STIFFNESS = 20;
 	private static final int CENTER_EDGE_STIFFNESS = 80;
 
-	public PolygonPalPlayer(Point center) {
-		this(PolygonFactory.simplePolygon(center, 5));
+	public PolygonPalPlayer(Point center, GameInterface gameState) {
+		this(PolygonFactory.simplePolygon(center, 5), gameState);
 	}
 
-	public PolygonPalPlayer(List<Point> points) {
+	public PolygonPalPlayer(List<Point> points, GameInterface gameState) {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
 		for (Iterator<Point> it = points.iterator(); it.hasNext();) {
@@ -44,6 +47,8 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 		center = new Vertex(Point.center(points), 5);
 
 		directionOfInput = new Vector();
+
+		this.face = new PolygonPalFace(gameState);
 	}
 
 
@@ -104,6 +109,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 					p.hit();
 					it.remove();
 					edges.set(i, false);
+					face.lostShield();
 
 					Vector momentum = p.momentum();//TODO distribute between vertices based on proximity?
 					vertex1.impulse(momentum);
@@ -139,6 +145,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 				}
 				vertices.remove(hitVertex);
 				edges.remove(hitVertex);
+				face.lostSide();
 			}
 		}
 
@@ -254,44 +261,10 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 		g.setColor(Color.WHITE);
 
 
-		drawEyesAndMouth(g, center.center());
-	}
-	
-	public void happyFace(Graphics2D g, Point center) {
-		g.fill(centeredCircle(center.add(-20, -20), 10));
-		g.fill(centeredCircle(center.add(20, -20), 10));
-
-		g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 180, 180);
-	}
-	
-	public void deadFace(Graphics2D g, Point center) {
-		Line2D.Double line1 = new Line2D.Double(center.add(-25, -25).point2D(), center.add(-15, -15).point2D());
-		Line2D.Double line2 = new Line2D.Double(center.add(-15, -25).point2D(), center.add(-25, -15).point2D());
-		Line2D.Double line3 = new Line2D.Double(center.add(25, -25).point2D(), center.add(15, -15).point2D());
-		Line2D.Double line4 = new Line2D.Double(center.add(15, -25).point2D(), center.add(25, -15).point2D());
-		g.draw(line1);
-		g.draw(line2);
-		g.draw(line3);
-		g.draw(line4);
-		g.drawArc((int)center.x - 10,(int) center.y, 20, 20, 0, 180);
-
-	}
-	public void drawEyesAndMouth(Graphics2D g, Point center) {
-		if(vertices.size() != 0) {
-			happyFace(g, center);
-		}
-		else {
-			deadFace(g, center);
-		}
-
+		face.renderEyesAndMouth(g, center.center());
 	}
 
-	public static Shape centeredCircle(Point center, double radius) {
-		double x = center.x - radius;
-		double y = center.y - radius;
-		double diameter = 2*radius;
-		return new Ellipse2D.Double(x, y, diameter, diameter);
-	}
+
 
 	public static double polygonRadius(int sides, double sideLength) {
 		return sideLength / (2 * Math.cos(Math.toRadians(90) * ((sides - 2.0) / sides)));
@@ -352,8 +325,8 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 		vertices.clear();
 		edges.clear();		
 	}
-	
-	
+
+
 	public int edges() {
 		return edges.size();
 	}
@@ -365,7 +338,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 				shields ++;
 			}
 		}
-		
+
 		return shields;
 	}
 
