@@ -46,7 +46,7 @@ public class GameToMusicAdaptor {
 	public float beatsPerMinutes() {
 		double minBPM = 90;
 		double maxBPM = 180;
-		double current = Interpolation.linearMapping(1, gameInfo.levelCount(), gameInfo.level(), minBPM, maxBPM);
+		double current = Interpolation.linearMapping(0, gameInfo.levelCount() - 1 , gameInfo.level(), minBPM, maxBPM);
 
 		return (float) current;
 	}
