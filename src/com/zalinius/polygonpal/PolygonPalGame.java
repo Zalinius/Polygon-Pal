@@ -269,7 +269,6 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 
 	@Override
 	public boolean hasWon() {
-		System.out.println(isLevelComplete()+ " " + !levels.hasNext());
 		return isLevelComplete() && !levels.hasNext();
 	}
 
