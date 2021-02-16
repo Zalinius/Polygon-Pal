@@ -18,13 +18,13 @@ import com.zalinius.zje.physics.Vector;
 public class LevelFactory implements Iterator<Level>{
 
 	private Locatable player;
-	private Rectangle2D.Double playArea;
+	private Rectangle2D playArea;
 	private Iterator<Level> levelIterator;
 
 	private int totalGameLevels;
 	private int currentLevel; // 0 <= currentLevel < totalGameLevels
 
-	public LevelFactory(Locatable player, Double playArea) {
+	public LevelFactory(Locatable player, Rectangle2D playArea) {
 		this.player = player;
 		this.playArea = playArea;
 		this.levelIterator = makeLevels().iterator();
@@ -39,10 +39,9 @@ public class LevelFactory implements Iterator<Level>{
 		levels.add(level4());
 		levels.add(level5());
 		totalGameLevels = levels.size();
-		currentLevel = 0;
 
-		levels.add(winScreen());
-
+		currentLevel = -1;
+		
 		return levels;
 	}
 
@@ -108,16 +107,12 @@ public class LevelFactory implements Iterator<Level>{
 		return new Level(timedProjectiles, "Final Level", "", true);
 	}
 
-	private Level winScreen() {
-		List<TimedProjectile> timedProjectiles = new ArrayList<>();
-		timedProjectiles.add(new TimedProjectile(Integer.MAX_VALUE, null));
-		return new Level(timedProjectiles, "Victory", "", false);
+	public static Level winScreen() {
+		return new NonPlayLevel("Victory", "", () -> true);
 	}
 
 	public static Level loseScreen() {
-		List<TimedProjectile> timedProjectiles = new ArrayList<>();
-		timedProjectiles.add(new TimedProjectile(Integer.MAX_VALUE, null));
-		return new Level(timedProjectiles, "Defeat", "How Tragic", false);
+		return new NonPlayLevel("Defeat", "How Tragic", () -> true);
 	}
 
 	public List<Projectile> makeOffscreenProjectiles(int n, ProjectileStrategy strategy){
@@ -180,14 +175,14 @@ public class LevelFactory implements Iterator<Level>{
 	}
 
 
-	public int getCurrentLevel() {
+	public int lastTakenLevelNumber() {
 		return currentLevel;
 	}
 	public int getTotalGameLevels() {
 		return totalGameLevels;
 	}
-	public boolean won() {
-		return currentLevel == totalGameLevels;
+	public boolean isFinalLevel() {
+		return currentLevel + 1 == totalGameLevels;
 	}
 
 }

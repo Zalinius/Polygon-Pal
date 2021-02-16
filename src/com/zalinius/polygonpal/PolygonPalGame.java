@@ -131,7 +131,12 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 			gameOver = true;
 			changeLevel(LevelFactory.loseScreen());
 			player.kill();
-		}else if(isLevelComplete()) {
+		}
+		else if(!gameOver && hasWon()){
+			gameOver = true;
+			changeLevel(LevelFactory.winScreen());
+		}
+		else if(!gameOver && isLevelComplete()) {
 			if(levels.hasNext()) {
 				nextLevel();
 			}
@@ -163,7 +168,7 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 	}
 	
 	public boolean isLevelComplete() {
-		return activeLevel.levelEmpty() && projectiles.isEmpty();
+		return activeLevel.levelClear() && projectiles.isEmpty();
 	}
 
 	public void render(Graphics2D g) {
@@ -230,7 +235,7 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 	
 	@Override
 	public int level() {
-		return levels.getCurrentLevel();
+		return levels.lastTakenLevelNumber();
 	}
 
 	@Override
@@ -264,7 +269,8 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 
 	@Override
 	public boolean hasWon() {
-		return levels.won();
+		System.out.println(isLevelComplete()+ " " + !levels.hasNext());
+		return isLevelComplete() && !levels.hasNext();
 	}
 
 	@Override

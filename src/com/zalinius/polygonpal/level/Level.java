@@ -35,7 +35,7 @@ public class Level {
 		}
 	}
 	
-	public boolean levelEmpty() {
+	public boolean levelClear() {
 		return timedProjectiles.isEmpty();
 	}
 	
