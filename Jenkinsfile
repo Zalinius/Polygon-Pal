@@ -36,9 +36,9 @@ pipeline {
             }
         }
         stage('Deploy') {
-        	//when {
- 			//	branch 'main'
-	       	//}
+        	when {
+ 				branch 'main'
+	       	}
 			environment {
 				GAME_VERSION = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true 
 				PROJECT_NAME = sh script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout', returnStdout: true 
