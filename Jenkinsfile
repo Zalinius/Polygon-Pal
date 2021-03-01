@@ -54,8 +54,8 @@ pipeline {
 				//Get JRE
 				unzip zipFile: '/usr/local/bin/OpenJDK11U-jre_x64_windows_hotspot_11.0.10_9.zip', dir: 'target/windows/jre/'
 				
-				sh 'sudo butler push target/windows/ zalinius/polygon-pal:win- -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'				
-				sh 'sudo butler push target/${PROJECT_NAME}-${GAME_VERSION}.jar zalinius/polygon-pal:win-linux-mac -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'
+				sh 'sudo butler push target/windows/ zalinius/polygonpal:windows -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'				
+				sh 'sudo butler push target/${PROJECT_NAME}-${GAME_VERSION}.jar zalinius/polygonpal:win-linux-mac -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'
 	       	}
 	    }
 	}
