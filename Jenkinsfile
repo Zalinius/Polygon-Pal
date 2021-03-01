@@ -49,6 +49,7 @@ pipeline {
 			}
 			steps {
 				//Make EXE
+				sh 'mkdir target/windows'
 				sh '${JAVA_8_HOME}/java -jar ${LAUNCH4J_HOME}/launch4j.jar windows_exe_config.xml'
 				//Get JRE
 				unzip zipFile: '$JRE_WIN', dir: 'target/windows/jre/'
