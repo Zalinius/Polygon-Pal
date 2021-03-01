@@ -43,8 +43,8 @@ pipeline {
 				GAME_VERSION = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true 
 				PROJECT_NAME = sh script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout', returnStdout: true 
 				
-				JAVA_8_HOME = '/usr/lib/jvm/java-8-openjdk-amd64/bin/'
-				LAUNCH4J_HOME = '/usr/local/bin/launch4j/'
+				JAVA_8_HOME = '/usr/lib/jvm/java-8-openjdk-amd64/bin'
+				LAUNCH4J_HOME = '/usr/local/bin/launch4j'
 				JRE_WIN = '/usr/local/bin/OpenJDK11U-jre_x64_windows_hotspot_11.0.10_9.zip'
 			}
 			steps {
