@@ -58,11 +58,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.badlogicgames.packr</groupId>
-				<artifactId>packr</artifactId>
-				<version>3.0.3</version>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -90,10 +85,6 @@
 		<repository>
 			<id>clojars_repo</id>
 			<url>https://clojars.org/repo/</url>
-		</repository>
-		<repository>
-			<id>packr_alternative_repo</id>
-			<url>https://artifactory.nimblygames.com/artifactory/ng-public-release/</url>
 		</repository>
 	</repositories>
 </project>
