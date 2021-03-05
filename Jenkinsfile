@@ -46,15 +46,24 @@ pipeline {
 				JAVA_8_HOME = '/usr/lib/jvm/java-8-openjdk-amd64/bin'
 				LAUNCH4J_HOME = '/usr/local/bin/launch4j'
 				JRE_WIN = '/usr/local/bin/OpenJDK11U-jre_x64_windows_hotspot_11.0.10_9.zip'
+
+				PACKR_HOME = '/usr/local/bin/packr'
+				JRE_LINUX = '/usr/local/bin/jdk-11.0.10+9-jre-linux/' //pre unpacked
 			}
 			steps {
 				//Make EXE
 				sh 'mkdir target/windows'
 				sh '${JAVA_8_HOME}/java -jar ${LAUNCH4J_HOME}/launch4j.jar windows_exe_config.xml'
+				
+				//Make Linux program
+				sh 'mkdir target/linux'
+				sh 'java -jar ${PACKR_HOME}/packr-all-3.0.3.jar --classpath target/${PROJECT_NAME}-${GAME_VERSION}.jar  --platform linux64	 --executable "Polygon Pal"  --output target/linux  --jdk ${JRE_LINUX}  --mainclass com.zalinius.polygonpal.PolygonPalGame'
+				
 				//Get JRE
 				unzip zipFile: '/usr/local/bin/OpenJDK11U-jre_x64_windows_hotspot_11.0.10_9.zip', dir: 'target/windows/jre/'
 				
-				sh 'sudo butler push target/windows/ zalinius/polygonpal:windows -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'				
+				sh 'sudo butler push target/windows/ 							zalinius/polygonpal:windows 	  -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'				
+				sh 'sudo butler push target/linux/  							zalinius/polygonpal:linux   	  -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'				
 				sh 'sudo butler push target/${PROJECT_NAME}-${GAME_VERSION}.jar zalinius/polygonpal:win-linux-mac -i /home/zalinius/.config/itch/butler_creds --userversion $GAME_VERSION --fix-permissions --if-changed'
 	       	}
 	    }
