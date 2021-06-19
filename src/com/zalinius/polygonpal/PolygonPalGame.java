@@ -22,8 +22,8 @@ import com.zalinius.zje.architecture.input.Clickable;
 import com.zalinius.zje.architecture.input.Inputtable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
+import com.zalinius.zje.plugins.AbstractPlugin;
 import com.zalinius.zje.plugins.BackgroundColor;
-import com.zalinius.zje.plugins.Plugin;
 
 public class PolygonPalGame extends GameContainer implements GameInterface{
 	
@@ -60,8 +60,8 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 	}
 	
 	@Override
-	public List<Plugin> getPlugins() {
-		List<Plugin> plugins = new ArrayList<>();
+	public List<AbstractPlugin> getPlugins() {
+		List<AbstractPlugin> plugins = new ArrayList<>();
 		plugins.add(new BackgroundColor(Color.BLACK));
 		return plugins;
 	}

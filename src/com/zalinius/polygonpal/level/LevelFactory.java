@@ -1,7 +1,6 @@
 package com.zalinius.polygonpal.level;
 
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

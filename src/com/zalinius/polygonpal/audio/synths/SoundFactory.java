@@ -1,7 +1,6 @@
 package com.zalinius.polygonpal.audio.synths;
 
 import com.zalinius.polygonpal.audio.pitch.AbsolutePitch;
-import com.zalinius.polygonpal.audio.pitch.PitchPlus;
 
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;

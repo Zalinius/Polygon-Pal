@@ -1,7 +1,6 @@
 package com.zalinius.polygonpal.audio.pitch;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class Melody implements Iterator<AbsolutePitch> {
 

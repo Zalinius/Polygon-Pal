@@ -1,12 +1,7 @@
 package com.zalinius.polygonpal.audio;
 
 import com.zalinius.polygonpal.GameInterface;
-import com.zalinius.polygonpal.audio.pitch.EightPitchScale;
-import com.zalinius.polygonpal.audio.pitch.ScaleFactory;
-import com.zalinius.polygonpal.audio.synths.SoundFactory;
 import com.zalinius.zje.math.Interpolation;
-
-import net.beadsproject.beads.data.Buffer;
 
 public class GameToMusicAdaptor {
 	
