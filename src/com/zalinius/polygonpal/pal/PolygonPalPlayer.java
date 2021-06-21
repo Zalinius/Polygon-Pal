@@ -14,12 +14,12 @@ import java.util.List;
 
 import com.zalinius.polygonpal.GameInterface;
 import com.zalinius.polygonpal.Projectile;
-import com.zalinius.polygonpal.physics.Vertex;
 import com.zalinius.zje.architecture.Graphical;
-import com.zalinius.zje.architecture.Locatable;
 import com.zalinius.zje.architecture.input.Inputtable;
+import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
+import com.zalinius.zje.physics.Vertex;
 
 public class PolygonPalPlayer implements Graphical, Locatable {
 
@@ -73,7 +73,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 			else {
 				stiffness = BROKEN_EDGE_STIFFNESS;
 			}
-			Vector forceOn1 = elasticForce(vertex1.center(), vertex2.center(), stiffness, segmentWidth());
+			Vector forceOn1 = elasticForce(vertex1.position(), vertex2.position(), stiffness, segmentWidth());
 			Vector forceOn2 = forceOn1.scale(-1);
 
 			forces.set(i, forces.get(i).add(forceOn1));
@@ -82,7 +82,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 
 
 
-			Vector centerForceOn1 = elasticForce(vertex1.center(), center.center(), CENTER_EDGE_STIFFNESS, polygonRadius(vertices.size(), segmentWidth()));
+			Vector centerForceOn1 = elasticForce(vertex1.position(), center.position(), CENTER_EDGE_STIFFNESS, polygonRadius(vertices.size(), segmentWidth()));
 			Vector forceOf1OnCenter = centerForceOn1.scale(-1);
 
 			forces.set(i, forces.get(i).add(centerForceOn1));
@@ -124,7 +124,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 		for (Iterator<Projectile> it = collideables.iterator(); it.hasNext();) {
 			Projectile p = it.next();	
 
-			if(interior.contains(p.center().x, p.center().y)) {
+			if(interior.contains(p.position().x, p.position().y)) {
 				//find closest vertex, and remove it
 				it.remove();
 				center.impulse(p.momentum());
@@ -133,7 +133,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 				for (Iterator<Vertex> itVertex = vertices.iterator(); itVertex.hasNext();) {
 					Vertex vertex = itVertex.next();
 
-					if(closestVertex == null || Point.distance(p.center(), vertex.center()) < Point.distance(p.center(), closestVertex.center())) {
+					if(closestVertex == null || Point.distance(p.position(), vertex.position()) < Point.distance(p.position(), closestVertex.position())) {
 						closestVertex = vertex;
 					}
 				}
@@ -261,7 +261,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 		g.setColor(Color.WHITE);
 
 
-		face.renderEyesAndMouth(g, center.center());
+		face.renderEyesAndMouth(g, center.position());
 	}
 
 
@@ -317,8 +317,8 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 	}
 
 	@Override
-	public Point center() {
-		return center.center();
+	public Point position() {
+		return center.position();
 	}
 
 	public void kill() {

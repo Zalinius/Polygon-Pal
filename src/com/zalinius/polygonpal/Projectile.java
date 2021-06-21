@@ -6,12 +6,12 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 
-import com.zalinius.polygonpal.physics.Vertex;
 import com.zalinius.zje.architecture.Graphical;
-import com.zalinius.zje.architecture.Locatable;
 import com.zalinius.zje.architecture.Logical;
+import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
+import com.zalinius.zje.physics.Vertex;
 
 public class Projectile implements Logical, Graphical, Locatable{
 	private Vertex position;
@@ -55,8 +55,8 @@ public class Projectile implements Logical, Graphical, Locatable{
 	}
 
 	@Override
-	public Point center() {
-		return position.center();
+	public Point position() {
+		return position.position();
 	}
 	
 	public Vector momentum() {

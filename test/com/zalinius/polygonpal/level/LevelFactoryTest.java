@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.junit.jupiter.api.Test;
 
-import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 
 public class LevelFactoryTest {

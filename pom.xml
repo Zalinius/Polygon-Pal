@@ -63,11 +63,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.beadsproject</groupId>
-			<artifactId>beads</artifactId>
-			<version>3.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<version>5.8.0-M1</version>
@@ -80,11 +75,4 @@
 			<version>0.2</version>
 		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>clojars_repo</id>
-			<url>https://clojars.org/repo/</url>
-		</repository>
-	</repositories>
 </project>

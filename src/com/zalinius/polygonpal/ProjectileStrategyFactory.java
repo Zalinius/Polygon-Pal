@@ -2,8 +2,8 @@ package com.zalinius.polygonpal;
 
 import java.awt.Color;
 
-import com.zalinius.polygonpal.physics.Physical;
-import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.physics.Locatable;
+import com.zalinius.zje.physics.Physical;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
 
@@ -35,7 +35,7 @@ public class ProjectileStrategyFactory {
 			
 			@Override
 			public Vector force(Physical projectile) {			
-				Vector direction = new Vector(projectile.center(), followee.center()).normalize();
+				Vector direction = new Vector(projectile.position(), followee.position()).normalize();
 				Vector propulsion = direction.scale(maxSpeed);
 				Vector friction = projectile.velocity().scale(-1);
 				
@@ -58,11 +58,11 @@ public class ProjectileStrategyFactory {
 		return new ProjectileStrategy() {			
 			@Override
 			public Vector force(Physical projectile) {
-				Point target = followee.center();
+				Point target = followee.position();
 				Vector velocity = projectile.velocity();
 				double centripetalMagnitude = projectile.mass() * maxSpeed * maxSpeed / turnRadius;
 				
-				Vector travelRequired = new Vector(projectile.center(), target);
+				Vector travelRequired = new Vector(projectile.position(), target);
 				Vector direction = velocity.rejection(travelRequired).normalize();
 				
 				return direction.scale(centripetalMagnitude);
