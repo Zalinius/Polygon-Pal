@@ -9,7 +9,6 @@ import com.zalinius.zje.music.pitch.AbsolutePitch;
 import com.zalinius.zje.music.pitch.IndexList;
 import com.zalinius.zje.music.pitch.Melody;
 import com.zalinius.zje.music.pitch.ScaleFactory;
-import com.zalinius.zje.music.synths.SoundFactory;
 
 import net.beadsproject.beads.core.UGen;
 
