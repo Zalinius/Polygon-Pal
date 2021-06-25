@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>target/polygonpal-0.2.jar</jar>
+  <jar>target/polygonpal.jar</jar>
   <outfile>target/windows/Polygon Pal.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
