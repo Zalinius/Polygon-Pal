@@ -4,95 +4,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.zalinius.polygonpal.audio.pitch.AbsolutePitch;
-import com.zalinius.polygonpal.audio.pitch.IndexList;
-import com.zalinius.polygonpal.audio.pitch.Melody;
-import com.zalinius.polygonpal.audio.pitch.ScaleFactory;
-import com.zalinius.polygonpal.audio.synths.SoundFactory;
+import com.zalinius.zje.music.Track;
+import com.zalinius.zje.music.pitch.AbsolutePitch;
+import com.zalinius.zje.music.pitch.IndexList;
+import com.zalinius.zje.music.pitch.Melody;
+import com.zalinius.zje.music.pitch.ScaleFactory;
 
-import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.core.Bead;
 import net.beadsproject.beads.core.UGen;
-import net.beadsproject.beads.core.io.JavaSoundAudioIO;
-import net.beadsproject.beads.ugens.Clock;
-import net.beadsproject.beads.ugens.Static;
 
-public class GameTrack {
-
-
-	private final AudioContext ac;
-	private final Clock clock;
+public class GameTrack extends Track {
+	
 	private final SoundFactory sf;
 	private Melody bassMelody;
 	private GameToMusicAdaptor musicInfo;
 
-	public void play() {
-		clock.addMessageListener(trackBead());
-		ac.out.addDependent(clock);
-		ac.start();
-	}
-
-	public GameTrack(AudioContext ac, GameToMusicAdaptor musicInfo) {
-		AudioContext.setDefaultContext(ac);
-		this.ac = ac;
-		clock = new Clock(ac, musicInfo.beatLength());
-
+	public GameTrack(GameToMusicAdaptor musicInfo) {
+		super(musicInfo.beatLength());
 		this.musicInfo = musicInfo;		
 		sf = new SoundFactory();
 		bassMelody = createBassMelody();
 	}
-
-	public static AudioContext aContext() {
-		//JavaSoundAudioIO.printMixerInfo();
-		AudioContext ac;
-		JavaSoundAudioIO jsaIO = new JavaSoundAudioIO();
-		jsaIO.selectMixer(1);
-		ac = new AudioContext(jsaIO);
-
-		return ac;
-	}
-
-
-	public Bead trackBead() {
-		return new Bead() {
-			//this is the method that we override to make the Bead do something
-
-			public void messageReceived(Bead message) {
-				Clock c = (Clock)message;
-				c.setIntervalEnvelope(new Static(musicInfo.beatLength()));
+	
+	@Override
+	protected void update(int beats, long ticks) {
+		if(ticks % 16 == 8) {
+			AbsolutePitch pitch = bassMelody.next();
+			float intensity = 0.4f;
 			
-				if(c.getCount() % 16 == 8) {
-					AbsolutePitch pitch = bassMelody.next();
-					float intensity = 0.4f;
-					
-					UGen bass = sf.bass(pitch.midiPitch(), intensity);
-					ac.out.addInput(bass);
-				}
-				if(useLightPercussion(c.getCount(), musicInfo.lightPercussionActivity())) {
-					UGen perc = sf.lightPercussion(50, 0.01);
-					ac.out.addInput(perc);
-				}
-				if(c.getCount() % 16 == 0 && musicInfo.baseDrumActive()) {
-					UGen perc = sf.heavyPercussion(100f, musicInfo.baseDrumIntensity());
-					ac.out.addInput(perc);
-				}
-			}
-		};
-
-	}
-	
-	
-	
-	public <E> List<E> createList(E[] elements){
-		List<E> list = new ArrayList<>();
-		for (int i = 0; i < elements.length; i++) {
-			E e = elements[i];
-			list.add(e);			
+			UGen bass = sf.bass(pitch.midiPitch(), intensity);
+			ac.out.addInput(bass);
+		}
+		if(useLightPercussion(ticks, musicInfo.lightPercussionActivity())) {
+			UGen perc = sf.lightPercussion(50, 0.01);
+			ac.out.addInput(perc);
+		}
+		if(ticks % 16 == 0 && musicInfo.baseDrumActive()) {
+			UGen perc = sf.heavyPercussion(100f, musicInfo.baseDrumIntensity());
+			ac.out.addInput(perc);
 		}
 		
-		return list;
-	}
-	
+	}	
+		
 	public <E> List<E> removeNElementsRandomly(List<E> list, int n){
 		if( n < 0 || n > list.size()) {
 			throw new IndexOutOfBoundsException();
@@ -171,13 +123,14 @@ public class GameTrack {
 	}
 
 
-	public void stop() {
-		clock.kill();
-		ac.stop();
-	}
 
 	public static float random(double x) {
 		return (float)(Math.random() * x);
+	}
+
+	@Override
+	public double getBeatLength() {
+		return musicInfo.beatLength();
 	}
 
 

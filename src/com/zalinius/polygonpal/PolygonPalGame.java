@@ -54,9 +54,15 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 		timeSinceLevelStart = 0;
 		gameOver = false;
 		
-		music = new GameTrack(GameTrack.aContext(), new GameToMusicAdaptor(this));
-		music.play();
+		music = new GameTrack(new GameToMusicAdaptor(this));
+		music.start();
+
 		addControls(keyInputs(), mouseInputs());
+	}
+	
+	@Override
+	public void startGame() {
+		super.startGame();
 	}
 	
 	@Override
@@ -120,8 +126,8 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 			Projectile projectile = it.next();
 			Rectangle2D.Double playArea = playArea();
 			Point center = new Point(playArea.getCenterX(), playArea.getCenterY());
-			double velocityRelativeToCenter = Vector.dotProduct(new Vector(projectile.center(), center), projectile.momentum());
-			if(velocityRelativeToCenter < 0 && !playArea.contains(projectile.center().point2D())) {
+			double velocityRelativeToCenter = Vector.dotProduct(new Vector(projectile.position(), center), projectile.momentum());
+			if(velocityRelativeToCenter < 0 && !playArea.contains(projectile.position().point2D())) {
 				it.remove();
 			}
 		}
@@ -279,7 +285,7 @@ public class PolygonPalGame extends GameContainer implements GameInterface{
 		List<Projectile> projectilesCopy = new ArrayList<>(projectiles);
 		for (Iterator<Projectile> it = projectilesCopy.iterator(); it.hasNext();) {
 			Projectile projectile = it.next();
-			if(Point.distance(projectile.center(), player.center()) < threshold) {
+			if(Point.distance(projectile.position(), player.position()) < threshold) {
 				nearbyProjectiles ++;
 			}
 		}

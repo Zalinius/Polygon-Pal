@@ -14,12 +14,12 @@ import java.util.List;
 
 import com.zalinius.polygonpal.pal.PolygonFactory;
 import com.zalinius.polygonpal.pal.PolygonPalPlayer;
-import com.zalinius.polygonpal.physics.Vertex;
 import com.zalinius.zje.architecture.Graphical;
-import com.zalinius.zje.architecture.Locatable;
 import com.zalinius.zje.architecture.input.Clickable;
+import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
+import com.zalinius.zje.physics.Vertex;
 
 public class Barrier implements Graphical {
 	private Vertex v1, v2;
@@ -45,7 +45,7 @@ public class Barrier implements Graphical {
 
 	public void update(double delta, List<Projectile> collideables) {
 		
-		Vector forceOn1 = permissiveElasticForce(v1.center(), v2.center(), stiffness, minStableLength, maxStableLength);
+		Vector forceOn1 = permissiveElasticForce(v1.position(), v2.position(), stiffness, minStableLength, maxStableLength);
 		Vector forceOn2 = forceOn1.scale(-1);
 		
 		
@@ -59,8 +59,8 @@ public class Barrier implements Graphical {
 				
 				Vector momentum = p.momentum();//TODO distribute between vertices based on proximity?
 				
-				double distanceFromV1 = Point.distance(p.center(), v1.center());
-				double distanceFromV2 = Point.distance(p.center(), v2.center());
+				double distanceFromV1 = Point.distance(p.position(), v1.position());
+				double distanceFromV2 = Point.distance(p.position(), v2.position());
 				
 				double momentumPortionV1 = distanceFromV2 / (distanceFromV1 + distanceFromV2);
 				double momentumPortionV2 = distanceFromV1 / (distanceFromV1 + distanceFromV2);
@@ -89,11 +89,11 @@ public class Barrier implements Graphical {
 	}
 	
 	private float thickness() {
-		return (float) (-Point.distance(v1.center(), v2.center()) / 20d + 20d);
+		return (float) (-Point.distance(v1.position(), v2.position()) / 20d + 20d);
 	}
 	
 	public Vector getDraggingForce(DraggableVertex dv, Vertex v) {
-		Vector mouseDraggingForce = new Vector(v.center(), mouse.center());
+		Vector mouseDraggingForce = new Vector(v.position(), mouse.position());
 		double maxDraggingForce = 9000;
 		double distanceForMaxForce = 300; // in pixels
 		double rawMagnitude = mouseDraggingForce.length() / distanceForMaxForce * maxDraggingForce;
@@ -139,8 +139,8 @@ public class Barrier implements Graphical {
 		
 
 		
-		Shape triangle1 = equilateralTriangle(v1.center(), v2.center());
-		Shape triangle2 = equilateralTriangle(v2.center(), v1.center());
+		Shape triangle1 = equilateralTriangle(v1.position(), v2.position());
+		Shape triangle2 = equilateralTriangle(v2.position(), v1.position());
 		
 		g.setColor(triangleColor(triangle1, dv1));
 		g.fill(triangle1);
@@ -153,7 +153,7 @@ public class Barrier implements Graphical {
 		if(draggableVertex.isDragging()) {
 			result = Color.LIGHT_GRAY;
 		}
-		else if(triangle.contains(mouse.center().point2D())) {
+		else if(triangle.contains(mouse.position().point2D())) {
 			result = Color.GRAY;
 		}
 		else {
@@ -202,7 +202,7 @@ public class Barrier implements Graphical {
 		}
 		
 		public Shape clickArea() {
-			return equilateralTriangle(vertex.center(), partnerVertex.center());
+			return equilateralTriangle(vertex.position(), partnerVertex.position());
 		}
 
 		public int mouseButtonCode() {

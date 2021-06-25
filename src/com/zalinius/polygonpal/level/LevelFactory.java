@@ -10,7 +10,7 @@ import com.zalinius.polygonpal.Projectile;
 import com.zalinius.polygonpal.ProjectileStrategy;
 import com.zalinius.polygonpal.ProjectileStrategyFactory;
 import com.zalinius.polygonpal.TimedProjectile;
-import com.zalinius.zje.architecture.Locatable;
+import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
 
