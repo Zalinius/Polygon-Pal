@@ -13,9 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zalinius.polygonpal.pal.PolygonFactory;
-import com.zalinius.polygonpal.pal.PolygonPalPlayer;
 import com.zalinius.zje.architecture.Graphical;
 import com.zalinius.zje.architecture.input.Clickable;
+import com.zalinius.zje.physics.Collisions;
 import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
@@ -53,7 +53,7 @@ public class Barrier implements Graphical {
 		for (Iterator<Projectile> it = collideables.iterator(); it.hasNext();) {
 			Projectile p = it.next();
 			
-			if(PolygonPalPlayer.intersection(p.shape(), new Line2D.Double(v1.x(), v1.y(), v2.x(), v2.y())) && !p.wasHit()) {
+			if(Collisions.intersection(p.shape(), new Line2D.Double(v1.x(), v1.y(), v2.x(), v2.y())) && !p.wasHit()) {
 				p.hit();
 				it.remove();
 				

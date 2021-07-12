@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import com.zalinius.polygonpal.GameInterface;
 import com.zalinius.polygonpal.Projectile;
 import com.zalinius.zje.architecture.Graphical;
 import com.zalinius.zje.architecture.input.Inputtable;
+import com.zalinius.zje.physics.Collisions;
 import com.zalinius.zje.physics.Locatable;
 import com.zalinius.zje.physics.Point;
 import com.zalinius.zje.physics.Vector;
@@ -105,7 +105,7 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 				Vertex vertex2 = vertices.get(Math.floorMod(i + 1, vertices.size()));
 				Boolean edge = edges.get(i);
 
-				if(edge && intersection(p.shape(), new Line2D.Double(vertex1.x(), vertex1.y(), vertex2.x(), vertex2.y())) && !p.wasHit()) {
+				if(edge && Collisions.intersection(p.shape(), new Line2D.Double(vertex1.x(), vertex1.y(), vertex2.x(), vertex2.y())) && !p.wasHit()) {
 					p.hit();
 					it.remove();
 					edges.set(i, false);
@@ -217,32 +217,6 @@ public class PolygonPalPlayer implements Graphical, Locatable {
 	}
 
 
-	public static boolean intersection(Ellipse2D.Double circle, Line2D.Double line) {
-		Point center = new Point(circle.getCenterX(), circle.getCenterY());
-		double radius = circle.width/2d;
-
-		//transform to line at origin coordinates
-		Point pointPrime = center.subtract(line.x1, line.y1);
-		Vector linePrime = new Vector(line.x1, line.y1, line.x2, line.y2);
-
-		double projectionMagnitude = linePrime.projectionMagnitude(pointPrime);
-
-		Point closestPoint;
-
-		if(projectionMagnitude >= 0 && projectionMagnitude <= linePrime.length()) {
-			closestPoint = linePrime.normalize().scale(projectionMagnitude).add(line.x1, line.y1).toPoint();
-		}
-		else {
-			if(line.getP1().distance(center.x, center.y) < line.getP2().distance(center.x, center.y)) {
-				closestPoint = new Point(line.getX1(), line.getY1());
-			}
-			else {
-				closestPoint = new Point(line.getX2(), line.getY2());
-			}
-
-		}
-		return Point.distance(center, closestPoint) <= radius;
-	}
 
 	public boolean playerDestroyed() {
 		return vertices.size() <= 2 || edges.size() <= 2;
